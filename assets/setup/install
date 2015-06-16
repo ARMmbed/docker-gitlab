@@ -1,8 +1,10 @@
 #!/bin/bash
 set -e
 
-GITLAB_VERSION=7.10.0
-GITLAB_SHELL_VERSION=2.6.2
+#GITLAB_VERSION=7.10.0
+GITLAB_VERSION=master
+GITLAB_SHELL_VERSION=2.6.3
+GITLAB_REPO="https://github.com/ARMmbed/gitlabhq.git"
 
 GITLAB_HOME="/home/git"
 GITLAB_INSTALL_DIR="${GITLAB_HOME}/gitlab"
@@ -38,9 +40,9 @@ sudo -u git -H ln -s ${GITLAB_DATA_DIR}/.ssh /home/git/.ssh
 sudo -u git -H mkdir -p ${GITLAB_DATA_DIR}
 
 # shallow clone gitlab-ce
-echo "Cloning gitlab-ce v.${GITLAB_VERSION}..."
-sudo -u git -H git clone -q -b v${GITLAB_VERSION} --depth 1 \
-  https://github.com/gitlabhq/gitlabhq.git ${GITLAB_INSTALL_DIR}
+echo "Cloning gitlab-ce ${GITLAB_VERSION}..."
+sudo -u git -H git clone -q -b ${GITLAB_VERSION} --depth 1 \
+  ${GITLAB_REPO} ${GITLAB_INSTALL_DIR}
 
 cd ${GITLAB_INSTALL_DIR}
 

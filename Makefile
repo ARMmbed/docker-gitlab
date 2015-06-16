@@ -11,7 +11,8 @@ help:
 	@echo "   5. make purge        - stop and remove the container"
 
 build:
-	@docker build --tag=${USER}/gitlab .
+	@docker build --tag=mbed/gitlab .
+	#@docker build --tag=${USER}/gitlab .
 
 quickstart:
 	@echo "Starting gitlab..."
@@ -20,7 +21,8 @@ quickstart:
 		-p 10022:22 -p 10080:80 \
 		-v /var/run/docker.sock:/run/docker.sock \
 		-v $(shell which docker):/bin/docker \
-		${USER}/gitlab:latest >/dev/null
+		mbed/gitlab:latest >/dev/null
+		#${USER}/gitlab:latest >/dev/null
 	@echo "Please be patient. This could take a while..."
 	@echo "GitLab will be available at http://localhost:10080"
 	@echo "Type 'make logs' for the logs"

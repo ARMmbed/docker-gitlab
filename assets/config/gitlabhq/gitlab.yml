@@ -195,6 +195,8 @@ production: &base
     # arguments, followed by optional 'args' which can be either a hash or an array.
     # Documentation for this is available at http://doc.gitlab.com/ce/integration/omniauth.html
     providers:
+    #  - { name: 'mbed_developer', app_id: 'CfJLjGVIetSsrbtv7YJTmhzbOPwWdnmb9iF0MKge',
+    #      app_secret: 'v7wDH5yCQfB3LVeKsvqPpI11W26dI2zpI16LQ4HvyyGxBDOwk60KbbczERUeEQkweCedijTp43IebbAvOHsrDObvEctG8XIbBmxe94jsxWFxNs38DxQFDnOzyMTFuVmf'}
       - { name: 'google_oauth2', app_id: '{{OAUTH_GOOGLE_API_KEY}}',
           app_secret: '{{OAUTH_GOOGLE_APP_SECRET}}',
           args: { access_type: 'offline', approval_prompt: '{{OAUTH_GOOGLE_APPROVAL_PROMPT}}', hd: '{{OAUTH_GOOGLE_RESTRICT_DOMAIN}}' } }
@@ -208,6 +210,7 @@ production: &base
           args: { scope: '{{OAUTH_GITLAB_SCOPE}}' } },
       - { name: 'bitbucket', app_id: '{{OAUTH_BITBUCKET_API_KEY}}',
           app_secret: '{{OAUTH_BITBUCKET_APP_SECRET}}'}
+
 
 
 
