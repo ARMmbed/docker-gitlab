@@ -108,6 +108,9 @@ GITLAB_GRAVATAR_HTTPS_URL=${GITLAB_GRAVATAR_HTTPS_URL:-}
 OAUTH_ALLOW_SSO=${OAUTH_ALLOW_SSO:-false}
 OAUTH_BLOCK_AUTO_CREATED_USERS=${OAUTH_BLOCK_AUTO_CREATED_USERS:-true}
 
+OAUTH_MBED_API_KEY=${OAUTH_MBED_API_KEY:-}
+OAUTH_MBED_APP_SECRET=${OAUTH_MBED_APP_SECRET:-}
+
 OAUTH_GOOGLE_API_KEY=${OAUTH_GOOGLE_API_KEY:-}
 OAUTH_GOOGLE_APP_SECRET=${OAUTH_GOOGLE_APP_SECRET:-}
 
@@ -524,6 +527,16 @@ else
 fi
 
 # apply oauth configuration
+
+# mbed
+if [ -n "${OAUTH_MBED_API_KEY}" -a -n "${OAUTH_MBED_APP_SECRET}" ]; then
+  OAUTH_ENABLED=true
+  sudo -u git -H sed 's/{{OAUTH_MBED_API_KEY}}/'"${OAUTH_MBED_API_KEY}"'/' -i config/gitlab.yml
+  sudo -u git -H sed 's/{{OAUTH_MBED_APP_SECRET}}/'"${OAUTH_MBED_APP_SECRET}"'/' -i config/gitlab.yml
+else
+  sudo -u git -H sed '/{{OAUTH_MBED_API_KEY}}/d' -i config/gitlab.yml
+  sudo -u git -H sed '/{{OAUTH_MBED_APP_SECRET}}/d' -i config/gitlab.yml
+fi
 
 # google
 if [ -n "${OAUTH_GOOGLE_API_KEY}" -a -n "${OAUTH_GOOGLE_APP_SECRET}" ]; then
