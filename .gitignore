@@ -1,3 +1,4 @@
 *.gem
 *.tar.gz
+*.DS_Store
 oauth_keys
