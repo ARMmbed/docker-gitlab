@@ -1,5 +1,44 @@
 # Changelog
 
+This file only reflects the changes that are made in the the docker image. Please refer to the upstream GitLab [CHANGELOG](https://github.com/gitlabhq/gitlabhq/blob/master/CHANGELOG) for the list of changes in GitLab.
+
+**7.12.0**
+- added `SMTP_TLS` configuration parameter
+- gitlab: upgrade to CE v.7.12.0
+- added `OAUTH_AUTO_LINK_LDAP_USER` configuration parameter
+
+**7.11.4-1**
+- base image update to fix SSL vulnerability
+
+**7.11.4**
+- gitlab: upgrade to CE v.7.11.4
+
+**7.11.3**
+- gitlab: upgrade to CE v.7.11.3
+
+**7.11.2**
+- gitlab: upgrade to CE v.7.11.2
+
+**7.11.0**
+- init: added `SIDEKIQ_MEMORY_KILLER_MAX_RSS` configuration option
+- init: added `SIDEKIQ_SHUTDOWN_TIMEOUT` configuration option
+- gitlab-shell: upgrade to v.2.6.3
+- gitlab: upgrade to CE v.7.11.0
+- init: removed `GITLAB_PROJECTS_VISIBILITY` ENV parameter
+
+**7.10.4**
+- gitlab: upgrade to CE v.7.10.4
+
+**7.10.3**
+- gitlab: upgrade to CE v.7.10.3
+
+**7.10.2**
+- init: added support for remote AWS backups
+- gitlab: upgrade to CE v.7.10.2
+
+**7.10.1**
+- gitlab: upgrade to CE v.7.10.1
+
 **7.10.0**
 - gitlab-shell: upgrade to v.2.6.2
 - gitlab: upgrade to CE v.7.10.0

@@ -29,16 +29,24 @@ apt-get install -y gcc g++ make patch pkg-config cmake \
 # remove the host keys generated during openssh-server installation
 rm -rf /etc/ssh/ssh_host_*_key /etc/ssh/ssh_host_*_key.pub
 
-# add git user
-adduser --disabled-login --gecos 'GitLab' git
-passwd -d git
+# add ${GITLAB_USER} user
+adduser --disabled-login --gecos 'GitLab' ${GITLAB_USER}
+passwd -d ${GITLAB_USER}
 
-rm -rf /home/git/.ssh
-sudo -u git -H mkdir -p ${GITLAB_DATA_DIR}/.ssh
-sudo -u git -H ln -s ${GITLAB_DATA_DIR}/.ssh /home/git/.ssh
+# set PATH (fixes cron job PATH issues)
+cat >> ${GITLAB_HOME}/.profile <<EOF
+PATH=/usr/local/sbin:/usr/local/bin:\$PATH
+EOF
+
+rm -rf ${GITLAB_HOME}/.ssh
+sudo -HEu ${GITLAB_USER} mkdir -p ${GITLAB_DATA_DIR}/.ssh
+sudo -HEu ${GITLAB_USER} ln -s ${GITLAB_DATA_DIR}/.ssh ${GITLAB_HOME}/.ssh
 
 # create the data store
-sudo -u git -H mkdir -p ${GITLAB_DATA_DIR}
+sudo -HEu ${GITLAB_USER} mkdir -p ${GITLAB_DATA_DIR}
+
+# configure git for the 'git' user
+sudo -HEu ${GITLAB_USER} git config --global core.autocrlf input
 
 # shallow clone gitlab-ce
 echo "Cloning gitlab-ce ${GITLAB_VERSION}..."
@@ -62,45 +70,47 @@ sed "/headers\['Strict-Transport-Security'\]/d" -i app/controllers/application_c
 
 # copy default configurations
 cp lib/support/nginx/gitlab /etc/nginx/sites-enabled/gitlab
-sudo -u git -H cp config/gitlab.yml.example config/gitlab.yml
-sudo -u git -H cp config/resque.yml.example config/resque.yml
-sudo -u git -H cp config/database.yml.mysql config/database.yml
-sudo -u git -H cp config/unicorn.rb.example config/unicorn.rb
-sudo -u git -H cp config/initializers/rack_attack.rb.example config/initializers/rack_attack.rb
-sudo -u git -H cp config/initializers/smtp_settings.rb.sample config/initializers/smtp_settings.rb
+sudo -HEu ${GITLAB_USER} cp config/gitlab.yml.example config/gitlab.yml
+sudo -HEu ${GITLAB_USER} cp config/resque.yml.example config/resque.yml
+sudo -HEu ${GITLAB_USER} cp config/database.yml.mysql config/database.yml
+sudo -HEu ${GITLAB_USER} cp config/unicorn.rb.example config/unicorn.rb
+sudo -HEu ${GITLAB_USER} cp config/initializers/rack_attack.rb.example config/initializers/rack_attack.rb
+sudo -HEu ${GITLAB_USER} cp config/initializers/smtp_settings.rb.sample config/initializers/smtp_settings.rb
 
 # symlink log -> ${GITLAB_LOG_DIR}/gitlab
 rm -rf log
 ln -sf ${GITLAB_LOG_DIR}/gitlab log
 
 # create required tmp directories
-sudo -u git -H mkdir -p tmp/pids/ tmp/sockets/
+sudo -HEu ${GITLAB_USER} mkdir -p tmp/pids/ tmp/sockets/
 chmod -R u+rwX tmp
 
 # create symlink to assets in tmp/cache
 rm -rf tmp/cache
-sudo -u git -H ln -s ${GITLAB_DATA_DIR}/tmp/cache tmp/cache
+sudo -HEu ${GITLAB_USER} ln -s ${GITLAB_DATA_DIR}/tmp/cache tmp/cache
 
 # create symlink to assets in public/assets
 rm -rf public/assets
-sudo -u git -H ln -s ${GITLAB_DATA_DIR}/tmp/public/assets public/assets
+sudo -HEu ${GITLAB_USER} ln -s ${GITLAB_DATA_DIR}/tmp/public/assets public/assets
 
 # create symlink to uploads directory
 rm -rf public/uploads
-sudo -u git -H ln -s ${GITLAB_DATA_DIR}/uploads public/uploads
+sudo -HEu ${GITLAB_USER} ln -s ${GITLAB_DATA_DIR}/uploads public/uploads
 
 # install gems required by gitlab, use local cache if available
 if [ -d "${GEM_CACHE_DIR}" ]; then
   mv ${GEM_CACHE_DIR} vendor/
-  chown -R git:git vendor/cache
+  chown -R ${GITLAB_USER}:${GITLAB_USER} vendor/cache
 fi
-sudo -u git -H bundle install -j$(nproc) --deployment --without development test aws
+sudo -HEu ${GITLAB_USER} bundle install -j$(nproc) --deployment --without development test aws
 
 # install gitlab-shell
-sudo -u git -H bundle exec rake gitlab:shell:install[v${GITLAB_SHELL_VERSION}] REDIS_URL=unix:/var/run/redis/redis.sock RAILS_ENV=production
+sudo -HEu ${GITLAB_USER} bundle exec \
+  rake gitlab:shell:install[v${GITLAB_SHELL_VERSION}] \
+    REDIS_URL=unix:/var/run/redis/redis.sock RAILS_ENV=production
 
-# make sure everything in /home/git is owned by the git user
-chown -R git:git /home/git/
+# make sure everything in ${GITLAB_HOME} is owned by the git user
+chown -R ${GITLAB_USER}:${GITLAB_USER} ${GITLAB_HOME}/
 
 # install gitlab bootscript
 cp lib/support/init.d/gitlab /etc/init.d/gitlab
@@ -184,7 +194,7 @@ cat > /etc/supervisor/conf.d/unicorn.conf <<EOF
 [program:unicorn]
 priority=10
 directory=${GITLAB_INSTALL_DIR}
-environment=HOME=/home/git
+environment=HOME=${GITLAB_HOME}
 command=bundle exec unicorn_rails -c ${GITLAB_INSTALL_DIR}/config/unicorn.rb -E production
 user=git
 autostart=true
@@ -199,16 +209,18 @@ cat > /etc/supervisor/conf.d/sidekiq.conf <<EOF
 [program:sidekiq]
 priority=10
 directory=${GITLAB_INSTALL_DIR}
-environment=HOME=/home/git
+environment=HOME=${GITLAB_HOME}
 command=bundle exec sidekiq -c {{SIDEKIQ_CONCURRENCY}}
   -q post_receive
   -q mailer
+  -q archive_repo
   -q system_hook
   -q project_web_hook
   -q gitlab_shell
   -q common
   -q default
   -e production
+  -t {{SIDEKIQ_SHUTDOWN_TIMEOUT}}
   -P ${GITLAB_INSTALL_DIR}/tmp/pids/sidekiq.pid
   -L ${GITLAB_INSTALL_DIR}/log/sidekiq.log
 user=git
