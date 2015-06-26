@@ -17,4 +17,4 @@ PARAMS="$PARAMS -v /var/run/docker.sock:/run/docker.sock"
 PARAMS="$PARAMS -v $(which docker):/bin/docker"
 PARAMS="$PARAMS -v /home/git/data"
 
-exec docker run -it --rm $PARAMS mbed/gitlab
+exec docker run -it --link=postgresql-gitlab:postgresql --link=redis-gitlab:redisio --rm $PARAMS mbed/gitlab

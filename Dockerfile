@@ -1,7 +1,7 @@
 FROM sameersbn/ubuntu:14.04.20150613
 MAINTAINER sameer@damagehead.com
 
-ENV GITLAB_VERSION=7.12.0 \
+ENV GITLAB_VERSION=v7.12.0 \
     GITLAB_SHELL_VERSION=2.6.3 \
     GITLAB_USER="git" \
     GITLAB_HOME="/home/git" \
@@ -35,10 +35,6 @@ RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv E1DD270288B4E60
 
 COPY mbed-overlay /app/setup/mbed-overlay
 RUN chmod 755 /app/setup/mbed-overlay
-
-COPY assets/setup/ /app/setup/
-RUN chmod 755 /app/setup/install
-RUN /app/setup/install
 
 COPY assets/setup/ ${SETUP_DIR}/
 RUN bash ${SETUP_DIR}/install.sh
