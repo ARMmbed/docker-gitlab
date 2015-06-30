@@ -1,19 +1,8 @@
 #!/bin/bash
 set -e
 
-#GITLAB_VERSION=v7.12.0
-#GITLAB_VERSION=master
-#GITLAB_SHELL_VERSION=2.6.3
-#GITLAB_REPO="https://github.com/ARMmbed/gitlabhq.git"
-GITLAB_REPO="https://github.com/gitlabhq/gitlabhq.git"
-
-#GITLAB_HOME="/home/git"
-#GITLAB_INSTALL_DIR="${GITLAB_HOME}/gitlab"
-#GITLAB_DATA_DIR="${GITLAB_HOME}/data"
-#GITLAB_LOG_DIR="/var/log/gitlab"
-#GITLAB_SHELL_INSTALL_DIR="${GITLAB_HOME}/gitlab-shell"
-
-#SETUP_DIR="/app/setup"
+GITLAB_REPO="https://github.com/ARMmbed/gitlabhq.git"
+#GITLAB_REPO="https://github.com/gitlabhq/gitlabhq.git"
 GEM_CACHE_DIR="${SETUP_DIR}/cache"
 
 # rebuild apt cache
@@ -49,21 +38,19 @@ sudo -HEu ${GITLAB_USER} mkdir -p ${GITLAB_DATA_DIR}
 sudo -HEu ${GITLAB_USER} git config --global core.autocrlf input
 
 # shallow clone gitlab-ce
+#echo "Cloning gitlab-ce v${GITLAB_VERSION}..."
+#sudo -HEu ${GITLAB_USER} git clone -q -b v${GITLAB_VERSION} --depth 1 \
+#  ${GITLAB_REPO} ${GITLAB_INSTALL_DIR}
+
+# shallow clone gitlab-ce
 echo "Cloning gitlab-ce ${GITLAB_VERSION}..."
 sudo -HEu ${GITLAB_USER} git clone -q -b ${GITLAB_VERSION} --depth 1 \
   ${GITLAB_REPO} ${GITLAB_INSTALL_DIR}
 
-# shallow clone gitlab-ce
-#echo "Cloning gitlab-ce ${GITLAB_VERSION}..."
-#sudo -HEu ${GITLAB_USER} git clone -q -b v${GITLAB_VERSION} --depth 1 \
-#  https://github.com/gitlabhq/gitlabhq.git ${GITLAB_INSTALL_DIR}
-
-# copy mbed's custom files into the gitlab repo
-echo "Copying mbed files into repo..."
-sudo -HEu ${GITLAB_USER} rsync -Pa /app/setup/mbed-overlay/ ${GITLAB_INSTALL_DIR}
-#sudo cp -R /app/setup/mbed-overlay/* ${GITLAB_INSTALL_DIR}
-
 cd ${GITLAB_INSTALL_DIR}
+
+#echo "Copying mbed files into repo..."
+#sudo -HEu ${GITLAB_USER} rsync -Pa /app/setup/mbed-overlay/ .
 
 # remove HSTS config from the default headers, we configure it in nginx
 sed "/headers\['Strict-Transport-Security'\]/d" -i app/controllers/application_controller.rb

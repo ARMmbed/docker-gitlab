@@ -1,0 +1,13 @@
+# circle.yml
+machine:
+  services:
+    - docker
+  environment:    
+      MBED_BUILD_TAG: mbed/docker-gitlab:cc-`echo $CIRCLE_BRANCH | sed "s/\//-/"`-
+
+deployment:
+  production:
+    branch: master
+    commands:
+      - echo Pushing $MBED_BUILD_TAG
+      - docker push $MBED_BUILD_TAG
