@@ -4,6 +4,10 @@ machine:
     - docker
   environment:    
       MBED_BUILD_TAG: mbed/docker-gitlab:cc-`echo $CIRCLE_BRANCH | sed "s/\//-/"`-
+dependencies:
+  override:
+    - sed "s/<EMAIL>/$DOCKER_EMAIL/;s/<AUTH>/$DOCKER_AUTH/" < docker/dockercfg.template > ~/.dockercfg
+    - docker build -t $MBED_BUILD_TAG .
 
 deployment:
   production:
