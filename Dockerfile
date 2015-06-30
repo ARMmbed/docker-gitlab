@@ -33,9 +33,6 @@ RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv E1DD270288B4E60
  && gem install --no-document bundler \
  && rm -rf /var/lib/apt/lists/* 
 
-COPY mbed-overlay /app/setup/mbed-overlay
-RUN chmod 755 /app/setup/mbed-overlay
-
 COPY assets/setup/ ${SETUP_DIR}/
 RUN bash ${SETUP_DIR}/install.sh
 
