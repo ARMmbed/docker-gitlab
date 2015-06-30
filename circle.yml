@@ -7,11 +7,11 @@ machine:
 dependencies:
   override:
     - sed "s/<EMAIL>/$DOCKER_EMAIL/;s/<AUTH>/$DOCKER_AUTH/" < docker/dockercfg.template > ~/.dockercfg
-    - docker build -t $MBED_BUILD_TAG .
+    - docker build -t $MBED_BUILD_TAG`git describe --always --abbrev=0` .
 
 deployment:
   production:
     branch: master
     commands:
-      - echo Pushing $MBED_BUILD_TAG
-      - docker push $MBED_BUILD_TAG
+      - echo Pushing $MBED_BUILD_TAG`git describe --always --abbrev=0` to github
+      - docker push $MBED_BUILD_TAG`git describe --always --abbrev=0`
