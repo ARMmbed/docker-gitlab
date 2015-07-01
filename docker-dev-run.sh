@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Oauth keys can be found on the developer.mbed.org/admin page under
+# Oauth2_Provider -> Applications -> code.mbed
 source oauth_keys
 
 NAME=mbed-code
