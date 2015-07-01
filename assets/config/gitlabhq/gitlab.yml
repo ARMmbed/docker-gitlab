@@ -208,8 +208,8 @@ production: &base
     # arguments, followed by optional 'args' which can be either a hash or an array.
     # Documentation for this is available at http://doc.gitlab.com/ce/integration/omniauth.html
     providers:
-      - { name: 'mbed', app_id: '{{OAUTH_MBED_API_KEY}}', 
-          app_secret: '{{OAUTH_MBED_APP_SECRET}}'}
+      - { name: 'mbed', app_id: '{{OAUTH_MBED_GITLAB_KEY}}', 
+          app_secret: '{{OAUTH_MBED_GITLAB_SECRET}}'}
 
   #
   # 3. Advanced settings

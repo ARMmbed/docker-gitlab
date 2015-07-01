@@ -112,8 +112,8 @@ OAUTH_ALLOW_SSO=${OAUTH_ALLOW_SSO:-true}
 OAUTH_BLOCK_AUTO_CREATED_USERS=${OAUTH_BLOCK_AUTO_CREATED_USERS:-false}
 OAUTH_AUTO_LINK_LDAP_USER=${OAUTH_AUTO_LINK_LDAP_USER:-false}
 
-OAUTH_MBED_API_KEY=${OAUTH_MBED_API_KEY:-}
-OAUTH_MBED_APP_SECRET=${OAUTH_MBED_APP_SECRET:-}
+OAUTH_MBED_GITLAB_KEY=${OAUTH_MBED_GITLAB_KEY:-}
+OAUTH_MBED_GITLAB_SECRET=${OAUTH_MBED_GITLAB_SECRET:-}
 
 OAUTH_GOOGLE_API_KEY=${OAUTH_GOOGLE_API_KEY:-}
 OAUTH_GOOGLE_APP_SECRET=${OAUTH_GOOGLE_APP_SECRET:-}
@@ -506,13 +506,13 @@ fi
 # apply oauth configuration
 
 # mbed
-if [ -n "${OAUTH_MBED_API_KEY}" -a -n "${OAUTH_MBED_APP_SECRET}" ]; then
+if [ -n "${OAUTH_MBED_GITLAB_KEY}" -a -n "${OAUTH_MBED_GITLAB_SECRET}" ]; then
   OAUTH_ENABLED=true
-  sudo -u git -H sed 's/{{OAUTH_MBED_API_KEY}}/'"${OAUTH_MBED_API_KEY}"'/' -i config/gitlab.yml
-  sudo -u git -H sed 's/{{OAUTH_MBED_APP_SECRET}}/'"${OAUTH_MBED_APP_SECRET}"'/' -i config/gitlab.yml
+  sudo -u git -H sed 's/{{OAUTH_MBED_GITLAB_KEY}}/'"${OAUTH_MBED_GITLAB_KEY}"'/' -i config/gitlab.yml
+  sudo -u git -H sed 's/{{OAUTH_MBED_GITLAB_SECRET}}/'"${OAUTH_MBED_GITLAB_SECRET}"'/' -i config/gitlab.yml
 else
-  sudo -u git -H sed '/{{OAUTH_MBED_API_KEY}}/d' -i config/gitlab.yml
-  sudo -u git -H sed '/{{OAUTH_MBED_APP_SECRET}}/d' -i config/gitlab.yml
+  sudo -u git -H sed '/{{OAUTH_MBED_GITLAB_KEY}}/d' -i config/gitlab.yml
+  sudo -u git -H sed '/{{OAUTH_MBED_GITLAB_SECRET}}/d' -i config/gitlab.yml
 fi
 
 # google
