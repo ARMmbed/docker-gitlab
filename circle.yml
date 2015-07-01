@@ -11,7 +11,8 @@ dependencies:
     - docker build -t $MBED_BUILD_TAG`git describe --always --abbrev=0` .
 
 test:
-  override: ""
+  override: 
+	- ""
 
 deployment:
   production:
