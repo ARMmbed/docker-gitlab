@@ -276,7 +276,7 @@ production: &base
 
   extra:
     ## Google analytics. Uncomment if you want it
-    google_analytics_id: '{{GOOGLE_ANALYTICS_ID}}'
+    google_analytics_id: '{{MBED_CODE_GOOGLE_ANALYTICS_ID}}'
 
     ## Piwik analytics.
     piwik_url: '{{PIWIK_URL}}'
